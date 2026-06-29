@@ -18,6 +18,12 @@
       <a class="nav-link" href="../learn.html">מרחב הלמידה</a>
     </div>
 
+    <section class="unit-nav panel compact-panel">
+      <a id="prevUnitTop" class="nav-button" href="#">יחידה קודמת</a>
+      <a class="nav-button center" href="index.html">כל יחידות האותיות</a>
+      <a id="nextUnitTop" class="nav-button" href="#">יחידה הבאה</a>
+    </section>
+
     <section class="panel">
       <h2>א. היכרות</h2>
       <p>כאן מותר לראות את שם האות והתעתיק. לחץ על השמע כדי להכיר את הצליל.</p>
@@ -32,7 +38,7 @@
       </div>
       <div class="options-grid" id="visualOptions"></div>
       <div class="feedback" id="visualFeedback"></div>
-      <p class="score-line" id="visualScore">0 תשובות נכונות</p>
+      <p class="score-line" id="visualScore">0 מתוך 0 תשובות נכונות</p>
     </section>
 
     <section class="panel">
@@ -43,19 +49,33 @@
       </div>
       <div class="options-grid" id="listeningOptions"></div>
       <div class="feedback" id="listeningFeedback"></div>
-      <p class="score-line" id="listeningScore">0 תשובות נכונות</p>
+      <p class="score-line" id="listeningScore">0 מתוך 0 תשובות נכונות</p>
     </section>
 
-    <section class="panel">
+    <section class="panel summary-panel">
       <h2>ד. סיכום</h2>
-      <p id="summaryText">למדת את היחידה. אפשר לחזור על התרגולים או לעבור ליחידה אחרת.</p>
-      <div style="text-align:center">
-        <button class="btn secondary" onclick="resetPractice()">איפוס תרגול</button>
-        <a class="primary-link" style="display:inline-block; margin-right:16px;" href="index.html">בחירת יחידה אחרת</a>
+      <p id="summaryText">למדת את היחידה. תרגל כמה פעמים, ואז סמן שסיימת.</p>
+
+      <div class="summary-box" id="summaryBox">
+        <div><strong>תרגול ראייה:</strong> <span id="summaryVisual">0/0</span></div>
+        <div><strong>תרגול שמיעה:</strong> <span id="summaryListening">0/0</span></div>
       </div>
+
+      <div class="finish-actions">
+        <button class="btn secondary" onclick="resetPractice()">איפוס תרגול</button>
+        <button class="btn success" onclick="finishUnit()">סיימתי יחידה ✓</button>
+      </div>
+
+      <div class="unit-nav bottom-nav">
+        <a id="prevUnitBottom" class="nav-button" href="#">יחידה קודמת</a>
+        <a class="nav-button center" href="index.html">חזרה לכל היחידות</a>
+        <a id="nextUnitBottom" class="nav-button" href="#">יחידה הבאה</a>
+      </div>
+
+      <div class="feedback" id="finishFeedback"></div>
     </section>
 
-    <div class="version">letters-unit-engine-v1</div>
+    <div class="version">letters-unit-engine-v2</div>
   </main>
 
   <script src="letters-data.js"></script>
@@ -63,12 +83,15 @@
     const params = new URLSearchParams(window.location.search);
     const unitId = Number(params.get('unit') || '1');
     const unit = window.LETTER_UNITS.find(u => u.id === unitId) || window.LETTER_UNITS[0];
+    const unitIndex = window.LETTER_UNITS.findIndex(u => u.id === unit.id);
 
     let currentAudio = null;
     let visualAnswer = null;
     let listeningAnswer = null;
     let visualCorrect = 0;
     let listeningCorrect = 0;
+    let visualAttempts = 0;
+    let listeningAttempts = 0;
 
     document.title = unit.title + ' - אותיות בערבית';
     document.getElementById('unitTitle').textContent = unit.title + ': אותיות בערבית';
@@ -88,6 +111,44 @@
         console.error(error);
         alert('לא הצלחתי לנגן את קובץ השמע. בדוק שהקובץ קיים בתיקיית audio/letters.');
       });
+    }
+
+    function setNavigation() {
+      const prevUnit = window.LETTER_UNITS[unitIndex - 1];
+      const nextUnit = window.LETTER_UNITS[unitIndex + 1];
+
+      ['prevUnitTop', 'prevUnitBottom'].forEach(function(id) {
+        const link = document.getElementById(id);
+        if (prevUnit) {
+          link.href = 'unit.html?unit=' + prevUnit.id;
+          link.textContent = '← ' + prevUnit.title;
+          link.classList.remove('disabled-link');
+        } else {
+          link.removeAttribute('href');
+          link.textContent = 'אין יחידה קודמת';
+          link.classList.add('disabled-link');
+        }
+      });
+
+      ['nextUnitTop', 'nextUnitBottom'].forEach(function(id) {
+        const link = document.getElementById(id);
+        if (nextUnit) {
+          link.href = 'unit.html?unit=' + nextUnit.id;
+          link.textContent = nextUnit.title + ' →';
+          link.classList.remove('disabled-link');
+        } else {
+          link.removeAttribute('href');
+          link.textContent = 'אין יחידה הבאה';
+          link.classList.add('disabled-link');
+        }
+      });
+    }
+
+    function updateScores() {
+      document.getElementById('visualScore').textContent = visualCorrect + ' מתוך ' + visualAttempts + ' תשובות נכונות';
+      document.getElementById('listeningScore').textContent = listeningCorrect + ' מתוך ' + listeningAttempts + ' תשובות נכונות';
+      document.getElementById('summaryVisual').textContent = visualCorrect + '/' + visualAttempts;
+      document.getElementById('summaryListening').textContent = listeningCorrect + '/' + listeningAttempts;
     }
 
     function buildStudy() {
@@ -125,15 +186,17 @@
         btn.textContent = item.name;
         btn.onclick = function() {
           const feedback = document.getElementById('visualFeedback');
+          visualAttempts++;
           if (item.arabic === visualAnswer.arabic) {
             visualCorrect++;
             feedback.textContent = 'נכון';
             feedback.className = 'feedback good';
-            document.getElementById('visualScore').textContent = visualCorrect + ' תשובות נכונות';
+            updateScores();
             setTimeout(newVisualQuestion, 700);
           } else {
             feedback.textContent = 'לא מדויק, נסה שוב';
             feedback.className = 'feedback bad';
+            updateScores();
           }
         };
         box.appendChild(btn);
@@ -154,15 +217,17 @@
         btn.textContent = item.arabic;
         btn.onclick = function() {
           const feedback = document.getElementById('listeningFeedback');
+          listeningAttempts++;
           if (item.arabic === listeningAnswer.arabic) {
             listeningCorrect++;
             feedback.textContent = 'נכון';
             feedback.className = 'feedback good';
-            document.getElementById('listeningScore').textContent = listeningCorrect + ' תשובות נכונות';
+            updateScores();
             setTimeout(function() { newListeningQuestion(false); }, 700);
           } else {
             feedback.textContent = 'לא מדויק, נסה שוב';
             feedback.className = 'feedback bad';
+            updateScores();
           }
         };
         box.appendChild(btn);
@@ -184,13 +249,30 @@
     function resetPractice() {
       visualCorrect = 0;
       listeningCorrect = 0;
-      document.getElementById('visualScore').textContent = '0 תשובות נכונות';
-      document.getElementById('listeningScore').textContent = '0 תשובות נכונות';
+      visualAttempts = 0;
+      listeningAttempts = 0;
+      document.getElementById('finishFeedback').textContent = '';
+      document.getElementById('finishFeedback').className = 'feedback';
+      updateScores();
       newVisualQuestion();
       newListeningQuestion(false);
     }
 
+    function finishUnit() {
+      const feedback = document.getElementById('finishFeedback');
+      const enoughPractice = visualCorrect >= 3 && listeningCorrect >= 3;
+      if (enoughPractice) {
+        feedback.textContent = 'מצוין. היחידה מוכנה לשמירת התקדמות בשלב הבא.';
+        feedback.className = 'feedback good';
+      } else {
+        feedback.textContent = 'כדאי לתרגל עוד קצת: לפחות 3 הצלחות בראייה ו-3 הצלחות בשמיעה.';
+        feedback.className = 'feedback bad';
+      }
+    }
+
+    setNavigation();
     buildStudy();
+    updateScores();
     newVisualQuestion();
     newListeningQuestion(false);
   </script>
