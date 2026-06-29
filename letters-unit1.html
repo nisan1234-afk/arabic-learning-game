@@ -288,7 +288,7 @@
 
     <section class="section" id="visualQuizSection">
       <h2>ב. תרגול ראייה</h2>
-      <p>המערכת תבקש ממך לבחור אות לפי השם שלה בעברית.</p>
+      <p>המערכת תציג אות בערבית, ואתה תבחר את התעתיק/השם שלה בעברית.</p>
       <div class="quiz-box">
         <div class="question" id="visualQuestion"></div>
         <div class="options-grid" id="visualOptions"></div>
@@ -315,7 +315,7 @@
       </div>
     </section>
 
-    <div class="footer-note">letters-unit1-local-audio-v2-no-transcript-practice</div>
+    <div class="footer-note">letters-unit1-local-audio-v3-visual-transcript</div>
   </main>
 
   <script>
@@ -404,7 +404,7 @@
       });
     }
 
-    function renderOptions(containerId, onClick) {
+    function renderArabicOptions(containerId, onClick) {
       const container = document.getElementById(containerId);
       container.innerHTML = "";
 
@@ -414,6 +414,24 @@
         button.type = "button";
         button.innerHTML = `
           <span class="arabic-letter">${item.letter}</span>
+        `;
+        button.addEventListener("click", function() {
+          onClick(item, button, container);
+        });
+        container.appendChild(button);
+      });
+    }
+
+    function renderTranscriptOptions(containerId, onClick) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = "";
+
+      shuffleArray(LETTERS).forEach(function(item) {
+        const button = document.createElement("button");
+        button.className = "option-btn";
+        button.type = "button";
+        button.innerHTML = `
+          <span class="name">${item.name}</span>
         `;
         button.addEventListener("click", function() {
           onClick(item, button, container);
@@ -435,12 +453,12 @@
 
     function newVisualQuestion() {
       visualAnswer = randomLetter();
-      document.getElementById("visualQuestion").textContent = "בחר את האות: " + visualAnswer.letter;
+      document.getElementById("visualQuestion").textContent = "איך קוראים לאות: " + visualAnswer.letter;
       const feedback = document.getElementById("visualFeedback");
       feedback.textContent = "";
       feedback.className = "feedback";
 
-      renderOptions("visualOptions", function(selected, button, container) {
+      renderTranscriptOptions("visualOptions", function(selected, button, container) {
         clearOptionMarks(container);
         visualTotal++;
 
@@ -468,7 +486,7 @@
       feedback.textContent = "";
       feedback.className = "feedback";
 
-      renderOptions("audioOptions", function(selected, button, container) {
+      renderArabicOptions("audioOptions", function(selected, button, container) {
         clearOptionMarks(container);
         audioTotal++;
 
