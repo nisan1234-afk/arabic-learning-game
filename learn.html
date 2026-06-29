@@ -1,1 +1,185 @@
-learn
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>מרחב למידה - ערבית מדוברת</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f4f8;
+      color: #1f2937;
+      direction: rtl;
+    }
+
+    header {
+      background: #2c3e50;
+      color: white;
+      padding: 28px 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+    }
+
+    header p {
+      margin: 0;
+      color: #dbeafe;
+      font-size: 17px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 32px auto;
+      padding: 0 18px;
+    }
+
+    .intro {
+      background: white;
+      border-radius: 18px;
+      padding: 22px;
+      margin-bottom: 26px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    .intro h2 {
+      margin-top: 0;
+      color: #2c3e50;
+      font-size: 26px;
+    }
+
+    .intro p {
+      margin-bottom: 0;
+      color: #6b7280;
+      font-size: 17px;
+    }
+
+    .learning-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+    }
+
+    .learning-card {
+      background: white;
+      border-radius: 18px;
+      padding: 24px 18px;
+      min-height: 160px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+      border: 2px solid transparent;
+      text-align: center;
+    }
+
+    .learning-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      border-color: #3498db;
+    }
+
+    .icon {
+      font-size: 42px;
+      margin-bottom: 12px;
+    }
+
+    .learning-card h3 {
+      margin: 0 0 8px;
+      color: #2c3e50;
+      font-size: 22px;
+    }
+
+    .learning-card p {
+      margin: 0;
+      color: #6b7280;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .tag {
+      margin-top: 12px;
+      background: #e5e7eb;
+      color: #4b5563;
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .active-tag {
+      background: #d1fae5;
+      color: #047857;
+    }
+
+    .version {
+      text-align: center;
+      margin: 30px 0 15px;
+      color: #9ca3af;
+      font-size: 13px;
+      direction: ltr;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>מרחב הלמידה</h1>
+    <p>יאללה, לדבר ערבית — צעד אחרי צעד</p>
+  </header>
+
+  <main class="container">
+    <section class="intro">
+      <h2>מה לומדים היום?</h2>
+      <p>בחר תחום לימוד. כרגע פתחנו את יחידת האותיות הראשונה, ובהמשך נוסיף מילים ומשפטים.</p>
+    </section>
+
+    <section class="learning-grid">
+      <a class="learning-card" href="letters.html">
+        <div class="icon">🔤</div>
+        <h3>אותיות</h3>
+        <p>היכרות, זיהוי ראייה ושמיעה של אותיות בערבית.</p>
+        <div class="tag active-tag">פעיל</div>
+      </a>
+
+      <a class="learning-card disabled" href="#">
+        <div class="icon">📘</div>
+        <h3>מילים</h3>
+        <p>מילים בסיסיות בערבית מדוברת לפי נושאים.</p>
+        <div class="tag">בקרוב</div>
+      </a>
+
+      <a class="learning-card disabled" href="#">
+        <div class="icon">💬</div>
+        <h3>משפטים</h3>
+        <p>משפטים קצרים לשיחה יומיומית.</p>
+        <div class="tag">בקרוב</div>
+      </a>
+
+      <a class="learning-card disabled" href="#">
+        <div class="icon">🎧</div>
+        <h3>תרגול שמיעה</h3>
+        <p>שמיעה וזיהוי של אותיות, מילים ומשפטים.</p>
+        <div class="tag">בקרוב</div>
+      </a>
+    </section>
+
+    <div class="version">learn-v1</div>
+  </main>
+</body>
+</html>
