@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>חזרה מסכמת - אותיות בערבית</title>
+  <link rel="stylesheet" href="letters.css" />
+</head>
+<body>
+  <header>
+    <h1>חזרה מסכמת: כל האותיות</h1>
+    <p>תרגול מעורב על כל 28 האותיות בערבית</p>
+  </header>
+
+  <main class="container">
+    <div class="top-actions">
+      <a class="nav-link" href="index.html">← חזרה ליחידות האותיות</a>
+      <a class="nav-link" href="../learn.html">מרחב הלמידה</a>
+      <span class="auth-status" id="authStatus">בודק חיבור...</span>
+    </div>
+
+    <section class="panel">
+      <h2>איך החזרה עובדת?</h2>
+      <p>כאן אין חומר חדש. המטרה היא לחזק זיהוי של כל האותיות שלמדת: פעם לפי ראייה ופעם לפי שמיעה.</p>
+    </section>
+
+    <section class="panel">
+      <h2>א. תרגול ראייה מכל האותיות</h2>
+      <p>מוצגת אות בערבית. בחר את השם/התעתיק המתאים.</p>
+      <div class="question-box">
+        <div class="question-letter" id="visualQuestion">?</div>
+      </div>
+      <div class="options-grid" id="visualOptions"></div>
+      <div class="feedback" id="visualFeedback"></div>
+      <p class="score-line" id="visualScore">0 מתוך 0 תשובות נכונות</p>
+    </section>
+
+    <section class="panel">
+      <h2>ב. תרגול שמיעה מכל האותיות</h2>
+      <p>לחץ להשמעה, ואז בחר את האות בערבית ששמעת.</p>
+      <div style="text-align:center">
+        <button class="btn" id="playListeningBtn">השמע אות 🔊</button>
+      </div>
+      <div class="options-grid" id="listeningOptions"></div>
+      <div class="feedback" id="listeningFeedback"></div>
+      <p class="score-line" id="listeningScore">0 מתוך 0 תשובות נכונות</p>
+    </section>
+
+    <section class="panel summary-panel">
+      <h2>ג. סיכום חזרה</h2>
+      <p>כדאי להגיע לפחות ל־10 הצלחות בראייה ו־10 הצלחות בשמיעה לפני סימון החזרה כהושלמה.</p>
+
+      <div class="summary-box">
+        <div><strong>תרגול ראייה:</strong> <span id="summaryVisual">0/0</span></div>
+        <div><strong>תרגול שמיעה:</strong> <span id="summaryListening">0/0</span></div>
+      </div>
+
+      <div class="finish-actions">
+        <button class="btn secondary" onclick="resetReview()">איפוס חזרה</button>
+        <button class="btn success" onclick="finishReview()">סיימתי חזרה מסכמת ✓</button>
+      </div>
+
+      <div class="feedback" id="finishFeedback"></div>
+    </section>
+
+    <div class="version">letters-review-v1</div>
+  </main>
+
+  <script src="letters-data.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDQMRU4HWpFlHc-EJmurZDhdiZywZWdCz4",
+      authDomain: "arabic-learning-game.firebaseapp.com",
+      projectId: "arabic-learning-game",
+      storageBucket: "arabic-learning-game.firebasestorage.app",
+      messagingSenderId: "246704525050",
+      appId: "1:246704525050:web:b6f6aee90c6ec93a5cc343",
+      measurementId: "G-T79GZD76HD"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    let currentUser = null;
+
+    onAuthStateChanged(auth, function(user) {
+      currentUser = user;
+      const authStatus = document.getElementById('authStatus');
+      if (user) {
+        authStatus.textContent = 'מחובר: ' + (user.displayName || user.email || 'משתמש');
+      } else {
+        authStatus.textContent = 'לא מחובר - השמירה תעבוד אחרי כניסה מגוגל';
+      }
+    });
+
+    const allLetters = window.LETTER_UNITS.flatMap(function(unit) {
+      return unit.letters.map(function(letter) {
+        return Object.assign({}, letter, { unitId: unit.id });
+      });
+    });
+
+    let currentAudio = null;
+    let visualAnswer = null;
+    let listeningAnswer = null;
+    let visualCorrect = 0;
+    let listeningCorrect = 0;
+    let visualAttempts = 0;
+    let listeningAttempts = 0;
+
+    function shuffle(array) {
+      return array.slice().sort(() => Math.random() - 0.5);
+    }
+
+    function pickOptions(correctItem, count) {
+      const others = allLetters.filter(function(item) { return item.arabic !== correctItem.arabic; });
+      return shuffle([correctItem].concat(shuffle(others).slice(0, count - 1)));
+    }
+
+    function playAudio(src) {
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+      }
+      currentAudio = new Audio(src);
+      currentAudio.play().catch(function(error) {
+        console.error(error);
+        alert('לא הצלחתי לנגן את קובץ השמע. בדוק שהקובץ קיים בתיקיית audio/letters.');
+      });
+    }
+
+    function updateScores() {
+      document.getElementById('visualScore').textContent = visualCorrect + ' מתוך ' + visualAttempts + ' תשובות נכונות';
+      document.getElementById('listeningScore').textContent = listeningCorrect + ' מתוך ' + listeningAttempts + ' תשובות נכונות';
+      document.getElementById('summaryVisual').textContent = visualCorrect + '/' + visualAttempts;
+      document.getElementById('summaryListening').textContent = listeningCorrect + '/' + listeningAttempts;
+    }
+
+    function newVisualQuestion() {
+      visualAnswer = allLetters[Math.floor(Math.random() * allLetters.length)];
+      document.getElementById('visualQuestion').textContent = visualAnswer.arabic;
+      document.getElementById('visualFeedback').textContent = '';
+      document.getElementById('visualFeedback').className = 'feedback';
+
+      const box = document.getElementById('visualOptions');
+      box.innerHTML = '';
+      pickOptions(visualAnswer, 4).forEach(function(item) {
+        const btn = document.createElement('button');
+        btn.className = 'option-card';
+        btn.type = 'button';
+        btn.textContent = item.name;
+        btn.onclick = function() {
+          const feedback = document.getElementById('visualFeedback');
+          visualAttempts++;
+          if (item.arabic === visualAnswer.arabic) {
+            visualCorrect++;
+            feedback.textContent = 'נכון';
+            feedback.className = 'feedback good';
+            updateScores();
+            setTimeout(newVisualQuestion, 700);
+          } else {
+            feedback.textContent = 'לא מדויק, נסה שוב';
+            feedback.className = 'feedback bad';
+            updateScores();
+          }
+        };
+        box.appendChild(btn);
+      });
+    }
+
+    function newListeningQuestion(playNow) {
+      listeningAnswer = allLetters[Math.floor(Math.random() * allLetters.length)];
+      document.getElementById('listeningFeedback').textContent = '';
+      document.getElementById('listeningFeedback').className = 'feedback';
+
+      const box = document.getElementById('listeningOptions');
+      box.innerHTML = '';
+      pickOptions(listeningAnswer, 4).forEach(function(item) {
+        const btn = document.createElement('button');
+        btn.className = 'option-card arabic-option';
+        btn.type = 'button';
+        btn.textContent = item.arabic;
+        btn.onclick = function() {
+          const feedback = document.getElementById('listeningFeedback');
+          listeningAttempts++;
+          if (item.arabic === listeningAnswer.arabic) {
+            listeningCorrect++;
+            feedback.textContent = 'נכון';
+            feedback.className = 'feedback good';
+            updateScores();
+            setTimeout(function() { newListeningQuestion(false); }, 700);
+          } else {
+            feedback.textContent = 'לא מדויק, נסה שוב';
+            feedback.className = 'feedback bad';
+            updateScores();
+          }
+        };
+        box.appendChild(btn);
+      });
+
+      if (playNow) {
+        playAudio(listeningAnswer.audio);
+      }
+    }
+
+    document.getElementById('playListeningBtn').addEventListener('click', function() {
+      if (!listeningAnswer) {
+        newListeningQuestion(true);
+      } else {
+        playAudio(listeningAnswer.audio);
+      }
+    });
+
+    function resetReview() {
+      visualCorrect = 0;
+      listeningCorrect = 0;
+      visualAttempts = 0;
+      listeningAttempts = 0;
+      document.getElementById('finishFeedback').textContent = '';
+      document.getElementById('finishFeedback').className = 'feedback';
+      updateScores();
+      newVisualQuestion();
+      newListeningQuestion(false);
+    }
+
+    async function finishReview() {
+      const feedback = document.getElementById('finishFeedback');
+      const enoughPractice = visualCorrect >= 10 && listeningCorrect >= 10;
+
+      if (!enoughPractice) {
+        feedback.textContent = 'כדאי לתרגל עוד קצת: לפחות 10 הצלחות בראייה ו-10 הצלחות בשמיעה.';
+        feedback.className = 'feedback bad';
+        return;
+      }
+
+      if (!currentUser) {
+        feedback.textContent = 'החזרה מוכנה, אבל לא זוהה חיבור Google. חזור לדף הכניסה והתחבר כדי לשמור התקדמות.';
+        feedback.className = 'feedback bad';
+        return;
+      }
+
+      try {
+        feedback.textContent = 'שומר התקדמות...';
+        feedback.className = 'feedback';
+
+        await setDoc(
+          doc(db, 'users', currentUser.uid, 'lettersProgress', 'reviewAll'),
+          {
+            reviewType: 'allLetters',
+            title: 'חזרה מסכמת - כל האותיות',
+            completed: true,
+            completedAt: serverTimestamp(),
+            visualCorrect: visualCorrect,
+            visualAttempts: visualAttempts,
+            listeningCorrect: listeningCorrect,
+            listeningAttempts: listeningAttempts,
+            updatedAt: serverTimestamp()
+          },
+          { merge: true }
+        );
+
+        feedback.textContent = 'נשמר! החזרה המסכמת סומנה כהושלמה ✓';
+        feedback.className = 'feedback good';
+      } catch (error) {
+        console.error(error);
+        feedback.textContent = 'לא הצלחתי לשמור ב-Firebase.';
+        feedback.className = 'feedback bad';
+      }
+    }
+
+    window.resetReview = resetReview;
+    window.finishReview = finishReview;
+
+    updateScores();
+    newVisualQuestion();
+    newListeningQuestion(false);
+  </script>
+</body>
+</html>

@@ -19,13 +19,20 @@
 
     <section class="panel">
       <h2>יחידות האותיות</h2>
-      <p>האותיות מחולקות לקבוצות קטנות כדי ללמוד לאט ובטוח. שינוי בתוכן האותיות נעשה רק בקבצים שבתיקיית <span dir="ltr">letters/</span>.</p>
+      <p>האותיות מחולקות לקבוצות קטנות כדי ללמוד לאט ובטוח. אחרי היחידות יש חזרה מסכמת על כל האותיות.</p>
     </section>
 
     <section class="units-grid" id="unitsGrid"></section>
+
+    <section class="panel">
+      <h2>חזרה מסכמת</h2>
+      <p>תרגול מעורב על כל 28 האותיות: זיהוי לפי ראייה וזיהוי לפי שמיעה.</p>
+      <div id="reviewCardArea"></div>
+    </section>
+
     <div class="feedback" id="progressStatus">בודק התקדמות...</div>
 
-    <div class="version">letters-index-v3-progress</div>
+    <div class="version">letters-index-v4-review</div>
   </main>
 
   <script src="letters-data.js"></script>
@@ -50,6 +57,7 @@
 
     const grid = document.getElementById('unitsGrid');
     const progressStatus = document.getElementById('progressStatus');
+    const reviewCardArea = document.getElementById('reviewCardArea');
 
     function renderUnits(completedUnits) {
       grid.innerHTML = '';
@@ -69,13 +77,29 @@
       });
     }
 
+    function renderReviewCard(reviewCompleted) {
+      reviewCardArea.innerHTML = '';
+      const card = document.createElement('a');
+      card.className = 'unit-card' + (reviewCompleted ? ' completed-card' : '');
+      card.href = 'review.html';
+      card.innerHTML = `
+        <h2>חזרה מסכמת</h2>
+        <div class="letters-row">ا ب ت ث ... ن ه و ي</div>
+        <p>חזרה על כל האותיות שלמדת, מתוך כל היחידות.</p>
+        <span class="tag ${reviewCompleted ? 'completed-tag' : ''}">${reviewCompleted ? 'הושלם ✓' : 'פתוח'}</span>
+      `;
+      reviewCardArea.appendChild(card);
+    }
+
     async function loadProgress(user) {
       const completedUnits = new Set();
+      let reviewCompleted = false;
 
       if (!user) {
         progressStatus.textContent = 'לא מחובר - היחידות פתוחות, אבל התקדמות לא תוצג.';
         progressStatus.className = 'feedback bad';
         renderUnits(completedUnits);
+        renderReviewCard(reviewCompleted);
         return;
       }
 
@@ -86,18 +110,24 @@
           if (data.completed && data.unitId) {
             completedUnits.add(Number(data.unitId));
           }
+          if (data.completed && data.reviewType === 'allLetters') {
+            reviewCompleted = true;
+          }
         });
 
-        progressStatus.textContent = completedUnits.size > 0
-          ? 'נטענה התקדמות: ' + completedUnits.size + ' יחידות הושלמו.'
+        const reviewText = reviewCompleted ? ' + חזרה מסכמת הושלמה.' : '';
+        progressStatus.textContent = completedUnits.size > 0 || reviewCompleted
+          ? 'נטענה התקדמות: ' + completedUnits.size + ' יחידות הושלמו' + reviewText
           : 'עדיין לא סומנה יחידת אותיות כהושלמה.';
         progressStatus.className = 'feedback good';
         renderUnits(completedUnits);
+        renderReviewCard(reviewCompleted);
       } catch (error) {
         console.error(error);
         progressStatus.textContent = 'לא הצלחתי לקרוא התקדמות מ-Firebase. היחידות עדיין פתוחות ללמידה.';
         progressStatus.className = 'feedback bad';
         renderUnits(completedUnits);
+        renderReviewCard(reviewCompleted);
       }
     }
 
