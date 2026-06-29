@@ -1,3 +1,18 @@
+הבנתי אותך לגמרי. אם המטרה היא ששחקן יוכל להתחיל ללמוד בטלפון בדרך לעבודה, ולהמשיך בדיוק מאותו מקום בערב מהמחשב בבית – אנחנו חייבים לחזור ל**התחברות באמצעות גוגל**. התחברות אנונימית פשוט לא תאפשר מעבר בין מכשירים.
+
+מכיוון שאתה לא רוצה לערוך קוד ידנית (ובצדק!), החזרתי את מנגנון ההתחברות של גוגל בצורה הכי נקייה שיש.
+
+כדי שהפעם זה יעבוד ב-100% ולא ייחסם על ידי גוגל בגלל הגדרות אבטחה, החלפתי את שיטת החיבור בקוד לשיטה שנקראת `signInWithPopup` (חלון קופץ). היא הרבה יותר יציבה ב-GitHub Pages.
+
+---
+
+### 📋 מה שצריך לעשות עכשיו:
+
+1. העתק את כל הקוד מהבלוק למטה.
+2. מחק את **כל** מה שיש לך כרגע בתוך `index.html` ב-VS Code, והדבק.
+3. שמור את הקובץ (`Ctrl + S`).
+
+```html
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
@@ -62,7 +77,7 @@
 
     <div class="container">
         <h1>יאללה, לדבר ערבית!</h1>
-        <p>ברוכים הבאים למשחק למידת ערבית מדוברת מאפס. כדי לשמור את ההתקדמות שלך, אנא התחבר:</p>
+        <p>ברוכים הבאים למשחק למידת ערבית מדוברת מאפס. כדי לשמור את ההתקדמות שלך מכל מכשיר, אנא התחבר:</p>
         
         <button class="btn-google" id="loginBtn">התחברות באמצעות Google</button>
         <div class="welcome-msg" id="welcomeMsg"></div>
@@ -70,7 +85,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDQMRU4HWpFlHc-EJmurZDhdiZywZWdCz4",
@@ -89,27 +104,32 @@
         const loginBtn = document.getElementById('loginBtn');
         const welcomeMsg = document.getElementById('welcomeMsg');
 
-        // בדיקה אוטומטית אם המשתמש הרגע חזר מהתחברות מוצלח
-        getRedirectResult(auth)
-            .then((result) => {
-                if (result && result.user) {
-                    showWelcome(result.user);
-                }
-            }).catch((error) => {
-                console.error("שגיאה בקבלת נתוני התחברות:", error);
-            });
+        // בדיקה אם המשתמש כבר מחובר (כדי שלא יצטרך ללחוץ שוב בכל כניסה)
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                loginBtn.style.display = 'none';
+                welcomeMsg.innerText = `אהלן ${user.displayName}, איזה כיף שבאת! מתחברים...`;
+                welcomeMsg.style.display = 'block';
+            }
+        });
 
-        // פונקציה שמציגה הודעת ברוך הבא
-        function showWelcome(user) {
-            loginBtn.style.display = 'none';
-            welcomeMsg.innerText = `אהלן ${user.displayName}, איזה כיף שבאת! מתחברים...`;
-            welcomeMsg.style.display = 'block';
-        }
-
-        // לחיצה על כפתור - מעבר מאובטח להתחברות של גוגל
+        // לחיצה על כפתור ההתחברות - פתיחת חלון קופץ מאובטח של גוגל
         loginBtn.addEventListener('click', () => {
-            signInWithRedirect(auth, provider);
+            signInWithPopup(auth, provider)
+                .then((result) => {
+                    console.log("מחובר בהצלחה:", result.user);
+                })
+                .catch((error) => {
+                    console.error("שגיאה בהתחברות:", error);
+                    alert("חלון ההתחברות נחסם או נסגר. אם מופיעה שגיאת אבטחה, נשאר לנו רק להוסיף את הכתובת של גיטהב לרשימה המורשת ב-Firebase.");
+                });
         });
     </script>
 </body>
 </html>
+
+```
+
+---
+
+תעדכן אותי ברגע שהקוד המעודכן שמור אצלך ב-VS Code, ונעלה אותו יחד לגיטהב כדי לבדוק אותו!
