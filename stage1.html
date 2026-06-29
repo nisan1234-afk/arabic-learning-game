@@ -1,102 +1,201 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>משחק למידת ערבית מדוברת - שלב 1</title>
-    
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f4f8;
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            position: relative;
-        }
-        .container {
-            text-align: center;
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            max-width: 500px;
-            width: 90%;
-        }
-        h1 { color: #2c3e50; margin-bottom: 5px; }
-        .subtitle { color: #7f8c8d; margin-bottom: 25px; }
-        .letters-container { display: flex; justify-content: space-around; margin: 30px 0; gap: 15px; }
-        .letter-card {
-            background: #f8f9fa;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 20px;
-            width: 90px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            user-select: none;
-        }
-        .letter-card:hover { transform: translateY(-3px); border-color: #3498db; background: #ebf5fb; }
-        .letter-card:active { transform: scale(0.95); }
-        .arabic-char { font-size: 48px; font-weight: bold; color: #2c3e50; display: block; margin-bottom: 5px; }
-        .letter-name { font-size: 14px; color: #7f8c8d; display: block; }
-        .instruction { font-size: 18px; font-weight: 500; color: #34495e; }
-        .version-tag { position: absolute; bottom: 15px; left: 15px; font-size: 12px; color: #bdc3c7; font-family: monospace; }
-    </style>
-</head>
-<body>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>שלב 1 - אותיות בערבית</title>
 
-    <div class="container">
-        <h1>שלב 1: אותיות וצלילים</h1>
-        <p class="subtitle">גרסת העל - הצלילים מוטמעים ישירות בקוד!</p>
-        
-        <p class="instruction">לחץ על האותיות כדי לשמוע איך הוגים אותן בערבית:</p>
-        
-        <div class="letters-container">
-            <div class="letter-card" onclick="playEmbeddedAudio('alif')">
-                <span class="arabic-char">ا</span>
-                <span class="letter-name">אליף (א)</span>
-            </div>
-            <div class="letter-card" onclick="playEmbeddedAudio('baa')">
-                <span class="arabic-char">ب</span>
-                <span class="letter-name">בא (ב)</span>
-            </div>
-            <div class="letter-card" onclick="playEmbeddedAudio('taa')">
-                <span class="arabic-char">ת</span>
-                <span class="letter-name">תא (ת)</span>
-            </div>
-        </div>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f3f7fb;
+      color: #1f2937;
+      direction: rtl;
+      text-align: center;
+    }
+
+    header {
+      background: #1f2937;
+      color: white;
+      padding: 24px 16px;
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+
+    header p {
+      margin: 0;
+      color: #d1d5db;
+      font-size: 16px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 30px auto;
+      padding: 0 16px;
+    }
+
+    .instructions {
+      background: white;
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      font-size: 18px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 16px;
+    }
+
+    .letter-card {
+      background: white;
+      border: 2px solid #e5e7eb;
+      border-radius: 18px;
+      padding: 18px 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      transition: transform 0.15s, border-color 0.15s, background 0.15s;
+      user-select: none;
+    }
+
+    .letter-card:hover {
+      transform: translateY(-3px);
+      border-color: #2563eb;
+      background: #eff6ff;
+    }
+
+    .letter-card:active {
+      transform: scale(0.97);
+    }
+
+    .arabic-letter {
+      display: block;
+      font-size: 54px;
+      font-weight: bold;
+      line-height: 1;
+      margin-bottom: 10px;
+      color: #111827;
+    }
+
+    .hebrew-name {
+      display: block;
+      font-size: 15px;
+      color: #4b5563;
+      font-weight: bold;
+    }
+
+    .status {
+      margin-top: 24px;
+      min-height: 28px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #2563eb;
+    }
+
+    .version {
+      margin: 30px 0 15px;
+      color: #9ca3af;
+      font-size: 13px;
+      direction: ltr;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>שלב 1: אותיות וצלילים</h1>
+    <p>לחץ על אות כדי לשמוע את ההגייה שלה</p>
+  </header>
+
+  <main class="container">
+    <div class="instructions">
+      בחר אות בערבית ולחץ עליה. כל הצלילים נטענים מתוך התיקייה המקומית של האתר.
     </div>
 
-    <div class="version-tag">stage1-v2.0</div>
+    <div class="grid" id="lettersGrid"></div>
 
-    <script>
-        // קבצי האודיו האמיתיים של אותיות בערבית מתורגמים לטקסט (Base64 MP3 קצרים ונקיים)
-        const AUDIO_DATA = {
-            alif: "data:audio/mp3;base64,SUQzBAAAAAAAI1RSTRMAAAALAAAAQ2hhbmdlbG9nK1RFTgAAAA8AAABMYXZmNTguMjkuMTAwAAAAAAAAAAAAAAD/40EAAtYAA8AAAAAFlgAKM63N9gAEl7uWp0XQAAdR/+NRAALmAAA8AAAAAFlgAIbvdvN1kAAEXw2vRpgABZp+A8AAA/F6p97///4vA8Dxesf/jUQAC4wADwAAAAAWWADmH53v//6p//41EAAu4AA8AAAAAFlgADxevVPe9b////E///jUQAC/AADwAAAAAWWAA88X///xev/jUQAC+gADwAAAAAWWAEAAP////jUQAC/gADwAAAAAWWAEAAP//7v41EAAwYADwAAAAAWWAEEAAP///+NRAAMGAA8AAAAAFlgBBAAD////jUQADBgAPAAAAABZYAQQAA////40EAAwYADwAAAAAWWAEEAAP//",
-            baa: "data:audio/mp3;base64,SUQzBAAAAAAAI1RSTRMAAAALAAAAQ2hhbmdlbG9nK1RFTgAAAA8AAABMYXZmNTguMjkuMTAwAAAAAAAAAAAAAAD/40EAAtYAA8AAAAAFlgAKM63N9gAEl7uWp0XQAAdR/+NRAALmAAA8AAAAAFlgAIbvdvN1kAAEXw2vRpgABZp+A8AAA/F6p97///4vA8Dxesf/jUQAC4wADwAAAAAWWADmH53v//6p//41EAAu4AA8AAAAAFlgADxevVPe9b////E///jUQAC/AADwAAAAAWWAA88X///xev/jUQAC+gADwAAAAAWAEAAP////jUQAC/gADwAAAAAWWAEAAP//7v41EAAwYADwAAAAAWWAEEAAP///+NRAAMGAA8AAAAAFlgBBAAD////jUQADBgAPAAAAABZYAQQAA////40EAAwYADwAAAAAWWAEEAAP//",
-            taa: "data:audio/mp3;base64,SUQzBAAAAAAAI1RSTRMAAAALAAAAQ2hhbmdlbG9nK1RFTgAAAA8AAABMYXZmNTguMjkuMTAwAAAAAAAAAAAAAAD/40EAAtYAA8AAAAAFlgAKM63N9gAEl7uWp0XQAAdR/+NRAALmAAA8AAAAAFlgAIbvdvN1kAAEXw2vRpgABZp+A8AAA/F6p97///4vA8Dxesf/jUQAC4wADwAAAAAWWADmH53v//6p//41EAAu4AA8AAAAAFlgADxevVPe9b////E///jUQAC/AADwAAAAAWWAA88X///xev/jUQAC+gADwAAAAAWAEAAP////jUQAC/gADwAAAAAWWAEAAP//7v41EAAwYADwAAAAAWWAEEAAP///+NRAAMGAA8AAAAAFlgBBAAD////jUQADBgAPAAAAABZYAQQAA////40EAAwYADwAAAAAWWAEEAAP//"
+    <div class="status" id="statusText"></div>
+
+    <div class="version">stage1-local-audio-v1</div>
+  </main>
+
+  <script>
+    const LETTERS = [
+      { letter: "ا", name: "אליף", audio: "audio/letters/001-alif.wav" },
+      { letter: "ب", name: "בא", audio: "audio/letters/002-baa.wav" },
+      { letter: "ت", name: "תא", audio: "audio/letters/003-taa.wav" },
+      { letter: "ث", name: "ת׳א", audio: "audio/letters/004-thaa.wav" },
+      { letter: "ج", name: "ג׳ים", audio: "audio/letters/005-jeem.wav" },
+      { letter: "ح", name: "חא", audio: "audio/letters/006-haa.wav" },
+      { letter: "خ", name: "ח׳א", audio: "audio/letters/007-khaa.wav" },
+      { letter: "د", name: "דאל", audio: "audio/letters/008-dal.wav" },
+      { letter: "ذ", name: "ד׳אל", audio: "audio/letters/009-thal.wav" },
+      { letter: "ر", name: "רא", audio: "audio/letters/010-raa.wav" },
+      { letter: "ز", name: "זאי", audio: "audio/letters/011-zay.wav" },
+      { letter: "س", name: "סין", audio: "audio/letters/012-seen.wav" },
+      { letter: "ش", name: "שין", audio: "audio/letters/013-sheen.wav" },
+      { letter: "ص", name: "צאד", audio: "audio/letters/014-sad.wav" },
+      { letter: "ض", name: "דאד", audio: "audio/letters/015-dad.wav" },
+      { letter: "ط", name: "טא", audio: "audio/letters/016-taa-heavy.wav" },
+      { letter: "ظ", name: "ט׳א / ז׳א", audio: "audio/letters/017-zaa-heavy.wav" },
+      { letter: "ع", name: "עין", audio: "audio/letters/018-ain.wav" },
+      { letter: "غ", name: "ע׳ין", audio: "audio/letters/019-ghain.wav" },
+      { letter: "ف", name: "פא", audio: "audio/letters/020-faa.wav" },
+      { letter: "ق", name: "קאף", audio: "audio/letters/021-qaf.wav" },
+      { letter: "ك", name: "כאף", audio: "audio/letters/022-kaf.wav" },
+      { letter: "ل", name: "לאם", audio: "audio/letters/023-lam.wav" },
+      { letter: "م", name: "מים", audio: "audio/letters/024-meem.wav" },
+      { letter: "ن", name: "נון", audio: "audio/letters/025-noon.wav" },
+      { letter: "ه", name: "הא", audio: "audio/letters/026-ha.wav" },
+      { letter: "و", name: "ואו", audio: "audio/letters/027-waw.wav" },
+      { letter: "ي", name: "יא", audio: "audio/letters/028-yaa.wav" }
+    ];
+
+    let currentAudio = null;
+
+    function playLetter(item) {
+      const statusText = document.getElementById("statusText");
+
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+      }
+
+      currentAudio = new Audio(item.audio);
+      statusText.textContent = "מנגן: " + item.name + " " + item.letter;
+
+      currentAudio.play().catch(function(error) {
+        statusText.textContent = "לא הצלחתי לנגן את הקובץ: " + item.audio;
+        console.error(error);
+      });
+    }
+
+    function buildLettersGrid() {
+      const grid = document.getElementById("lettersGrid");
+
+      LETTERS.forEach(function(item) {
+        const card = document.createElement("div");
+        card.className = "letter-card";
+        card.onclick = function() {
+          playLetter(item);
         };
 
-        let currentAudio = null;
+        card.innerHTML = `
+          <span class="arabic-letter">${item.letter}</span>
+          <span class="hebrew-name">${item.name}</span>
+        `;
 
-        function playEmbeddedAudio(letterKey) {
-            // עצירת השמעה קודמת
-            if (currentAudio) {
-                currentAudio.pause();
-            }
+        grid.appendChild(card);
+      });
+    }
 
-            // יצירת אלמנט אודיו מהטקסט המוטמע והשמעה שלו
-            currentAudio = new Audio(AUDIO_DATA[letterKey]);
-            currentAudio.play().catch(error => {
-                console.error("שגיאה בניגון אודיו מוטמע:", error);
-            });
-        }
-    </script>
+    buildLettersGrid();
+  </script>
 </body>
 </html>
