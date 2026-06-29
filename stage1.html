@@ -50,11 +50,15 @@
             cursor: pointer;
             transition: all 0.2s ease;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            user-select: none;
         }
         .letter-card:hover {
             transform: translateY(-3px);
             border-color: #3498db;
             background: #ebf5fb;
+        }
+        .letter-card:active {
+            transform: scale(0.95);
         }
         .arabic-char {
             font-size: 48px;
@@ -92,34 +96,53 @@
         <p class="instruction">לחץ על האותיות כדי לשמוע איך הוגים אותן בערבית:</p>
         
         <div class="letters-container">
-            <div class="letter-card" onclick="playAudio('ا', 'ar-SA')">
+            <div class="letter-card" onclick="playAudio('ا')">
                 <span class="arabic-char">ا</span>
                 <span class="letter-name">אליף (א)</span>
             </div>
-            <div class="letter-card" onclick="playAudio('ب', 'ar-SA')">
+            <div class="letter-card" onclick="playAudio('ب')">
                 <span class="arabic-char">ب</span>
                 <span class="letter-name">בא (ב)</span>
             </div>
-            <div class="letter-card" onclick="playAudio('ت', 'ar-SA')">
+            <div class="letter-card" onclick="playAudio('ت')">
                 <span class="arabic-char">ت</span>
                 <span class="letter-name">תא (ת)</span>
             </div>
         </div>
     </div>
 
-    <div class="version-tag">stage1-v1.0</div>
+    <div class="version-tag">stage1-v1.1</div>
 
     <script>
-        function playAudio(text, lang) {
+        // פונקציית השמעת צליל משופרת לעקיפת חסימות דפדפן
+        function playAudio(text) {
             if ('speechSynthesis' in window) {
+                // ביטול הקראות קודמות אם תקועות
+                window.speechSynthesis.cancel();
+                
                 const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = lang;
-                utterance.rate = 0.8;
+                utterance.lang = 'ar-SA';
+                utterance.rate = 0.7; // מעט איטי יותר וברור
+                utterance.volume = 1.0; // ווליום מקסימלי
+                
+                // בדיקת שגיאות בזמן אמת בקונסול
+                utterance.onerror = function(event) {
+                    console.error("שגיאת הקראה:", event.error);
+                };
+
                 window.speechSynthesis.speak(utterance);
             } else {
-                console.error("הדפדפן שלך לא תומך בהקראת קול.");
+                alert("הדפדפן שלך לא תומך בהקראת קול. מומלץ להשתמש בכרום.");
             }
         }
+        
+        // הפעלה ראשונית שקטה כדי "להעיר" את מנגנון הסאונד של הדפדפן מיד בכניסה
+        window.addEventListener('click', function() {
+            if ('speechSynthesis' in window) {
+                const initUtterance = new SpeechSynthesisUtterance('');
+                window.speechSynthesis.speak(initUtterance);
+            }
+        }, { once: true });
     </script>
 </body>
 </html>
