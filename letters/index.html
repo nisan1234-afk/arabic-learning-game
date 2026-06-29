@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>אותיות - בחירת יחידה</title>
+  <link rel="stylesheet" href="letters.css" />
+</head>
+<body>
+  <header>
+    <h1>אותיות בערבית</h1>
+    <p>בחר יחידת לימוד. כל יחידה כוללת היכרות, תרגול ראייה ותרגול שמיעה.</p>
+  </header>
+
+  <main class="container">
+    <div class="top-actions">
+      <a class="nav-link" href="../learn.html">← חזרה למרחב הלמידה</a>
+    </div>
+
+    <section class="panel">
+      <h2>יחידות האותיות</h2>
+      <p>האותיות מחולקות לקבוצות קטנות כדי ללמוד לאט ובטוח. שינוי בתוכן האותיות נעשה רק בקבצים שבתיקיית <span dir="ltr">letters/</span>.</p>
+    </section>
+
+    <section class="units-grid" id="unitsGrid"></section>
+
+    <div class="version">letters-index-v2-modular</div>
+  </main>
+
+  <script src="letters-data.js"></script>
+  <script>
+    const grid = document.getElementById('unitsGrid');
+
+    window.LETTER_UNITS.forEach(function(unit) {
+      const letters = unit.letters.map(item => item.arabic).join(' ');
+      const card = document.createElement('a');
+      card.className = 'unit-card';
+      card.href = 'unit.html?unit=' + unit.id;
+      card.innerHTML = `
+        <h2>${unit.title}</h2>
+        <div class="letters-row">${letters}</div>
+        <p>${unit.subtitle}</p>
+        <span class="tag">פתוח</span>
+      `;
+      grid.appendChild(card);
+    });
+  </script>
+</body>
+</html>
