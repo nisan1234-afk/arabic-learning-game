@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>משחק למידת ערבית מדוברת</title>
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 90%;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        p {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+        .btn-google {
+            background-color: #4285F4;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .btn-google:hover {
+            background-color: #357ae8;
+        }
+        .welcome-msg {
+            font-size: 18px;
+            color: #27ae60;
+            font-weight: bold;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>יאללה, לדבר ערבית!</h1>
+        <p>ברוכים הבאים למשחק למידת ערבית מדוברת מאפס. כדי לשמור את ההתקדמות שלך, אנא התחבר:</p>
+        
+        <button class="btn-google" id="loginBtn">התחברות באמצעות Google</button>
+        
+        <div class="welcome-msg" id="welcomeMsg"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        // הגדרות ה-Firebase האמיתיות של הפרויקט שלך
+        const firebaseConfig = {
+            apiKey: "AIzaSyDQMRU4HWpFlHc-EJmurZDhdiZywZWdCz4",
+            authDomain: "arabic-learning-game.firebaseapp.com",
+            projectId: "arabic-learning-game",
+            storageBucket: "arabic-learning-game.firebasestorage.app",
+            messagingSenderId: "246704525050",
+            appId: "1:246704525050:web:b6f6aee90c6ec93a5cc343",
+            measurementId: "G-T79GZD76HD"
+        };
+
+        // אתחול המערכת
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        // חיבור לאלמנטים במסך
+        const loginBtn = document.getElementById('loginBtn');
+        const welcomeMsg = document.getElementById('welcomeMsg');
+
+        // מנגנון הלחיצה על כפתור ההתחברות
+        loginBtn.addEventListener('click', () => {
+            signInWithPopup(auth, provider)
+                .then((result) => {
+                    const user = result.user;
+                    
+                    // הסתרת הכפתור והצגת הודעת ברוך הבא עם שם המשתמש מגוגל
+                    loginBtn.style.display = 'none';
+                    welcomeMsg.innerText = `אהלן ${user.displayName}, איזה כיף שבאת! מתחברים...`;
+                    welcomeMsg.style.display = 'block';
+                    
+                    console.log("משתמש מחובר בהצלחה:", user);
+                })
+                .catch((error) => {
+                    console.error("שגיאה בהתחברות:", error);
+                    alert("אופס! כדי שההתחברות תעבוד, ודא שאתה מריץ את הקובץ דרך Live Server ב-VS Code (קליק ימני על הקוד -> Open with Live Server) ולא בדאבל-קליק רגיל מהתיקייה.");
+                });
+        });
+    </script>
+</body>
+</html>
