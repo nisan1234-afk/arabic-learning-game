@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>משחק למידת ערבית מדוברת - שלב 1</title>
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            position: relative;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 90%;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            color: #7f8c8d;
+            margin-bottom: 25px;
+        }
+        .letters-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            gap: 15px;
+        }
+        .letter-card {
+            background: #f8f9fa;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            width: 90px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .letter-card:hover {
+            transform: translateY(-3px);
+            border-color: #3498db;
+            background: #ebf5fb;
+        }
+        .arabic-char {
+            font-size: 48px;
+            font-weight: bold;
+            color: #2c3e50;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .letter-name {
+            font-size: 14px;
+            color: #7f8c8d;
+            display: block;
+        }
+        .instruction {
+            font-size: 18px;
+            font-weight: 500;
+            color: #34495e;
+        }
+        .version-tag {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            font-size: 12px;
+            color: #bdc3c7;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>שלב 1: אותיות וצלילים</h1>
+        <p class="subtitle">כאן מתחילים ללמוד את יסודות השפה!</p>
+        
+        <p class="instruction">לחץ על האותיות כדי לשמוע איך הוגים אותן בערבית:</p>
+        
+        <div class="letters-container">
+            <div class="letter-card" onclick="playAudio('ا', 'ar-SA')">
+                <span class="arabic-char">ا</span>
+                <span class="letter-name">אליף (א)</span>
+            </div>
+            <div class="letter-card" onclick="playAudio('ب', 'ar-SA')">
+                <span class="arabic-char">ب</span>
+                <span class="letter-name">בא (ב)</span>
+            </div>
+            <div class="letter-card" onclick="playAudio('ت', 'ar-SA')">
+                <span class="arabic-char">ت</span>
+                <span class="letter-name">תא (ת)</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="version-tag">stage1-v1.0</div>
+
+    <script>
+        function playAudio(text, lang) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = lang;
+                utterance.rate = 0.8;
+                window.speechSynthesis.speak(utterance);
+            } else {
+                console.error("הדפדפן שלך לא תומך בהקראת קול.");
+            }
+        }
+    </script>
+</body>
+</html>
