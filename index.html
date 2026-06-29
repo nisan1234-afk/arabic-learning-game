@@ -65,15 +65,13 @@
         <p>ברוכים הבאים למשחק למידת ערבית מדוברת מאפס. כדי לשמור את ההתקדמות שלך, אנא התחבר:</p>
         
         <button class="btn-google" id="loginBtn">התחברות באמצעות Google</button>
-        
         <div class="welcome-msg" id="welcomeMsg"></div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // הגדרות ה-Firebase האמיתיות של הפרויקט שלך
         const firebaseConfig = {
             apiKey: "AIzaSyDQMRU4HWpFlHc-EJmurZDhdiZywZWdCz4",
             authDomain: "arabic-learning-game.firebaseapp.com",
@@ -84,32 +82,33 @@
             measurementId: "G-T79GZD76HD"
         };
 
-        // אתחול המערכת
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
 
-        // חיבור לאלמנטים במסך
         const loginBtn = document.getElementById('loginBtn');
         const welcomeMsg = document.getElementById('welcomeMsg');
 
-        // מנגנון הלחיצה על כפתור ההתחברות
+        // בדיקה אוטומטית אם המשתמש הרגע חזר מהתחברות מוצלח
+        getRedirectResult(auth)
+            .then((result) => {
+                if (result && result.user) {
+                    showWelcome(result.user);
+                }
+            }).catch((error) => {
+                console.error("שגיאה בקבלת נתוני התחברות:", error);
+            });
+
+        // פונקציה שמציגה הודעת ברוך הבא
+        function showWelcome(user) {
+            loginBtn.style.display = 'none';
+            welcomeMsg.innerText = `אהלן ${user.displayName}, איזה כיף שבאת! מתחברים...`;
+            welcomeMsg.style.display = 'block';
+        }
+
+        // לחיצה על כפתור - מעבר מאובטח להתחברות של גוגל
         loginBtn.addEventListener('click', () => {
-            signInWithPopup(auth, provider)
-                .then((result) => {
-                    const user = result.user;
-                    
-                    // הסתרת הכפתור והצגת הודעת ברוך הבא עם שם המשתמש מגוגל
-                    loginBtn.style.display = 'none';
-                    welcomeMsg.innerText = `אהלן ${user.displayName}, איזה כיף שבאת! מתחברים...`;
-                    welcomeMsg.style.display = 'block';
-                    
-                    console.log("משתמש מחובר בהצלחה:", user);
-                })
-                .catch((error) => {
-                    console.error("שגיאה בהתחברות:", error);
-                    alert("אופס! כדי שההתחברות תעבוד, ודא שאתה מריץ את הקובץ דרך Live Server ב-VS Code (קליק ימני על הקוד -> Open with Live Server) ולא בדאבל-קליק רגיל מהתיקייה.");
-                });
+            signInWithRedirect(auth, provider);
         });
     </script>
 </body>
