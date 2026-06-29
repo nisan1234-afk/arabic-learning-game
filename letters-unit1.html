@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>יחידת לימוד 1 - אותיות בערבית</title>
+
+  <style>
+    :root {
+      --bg: #f3f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --success: #16a34a;
+      --error: #dc2626;
+      --border: #e5e7eb;
+      --soft-blue: #eff6ff;
+      --soft-green: #ecfdf5;
+      --soft-red: #fef2f2;
+      --shadow: 0 4px 14px rgba(0,0,0,0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      direction: rtl;
+      text-align: center;
+    }
+
+    header {
+      background: #1f2937;
+      color: white;
+      padding: 26px 16px;
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+    }
+
+    header p {
+      margin: 0;
+      color: #d1d5db;
+      font-size: 16px;
+    }
+
+    .container {
+      max-width: 1120px;
+      margin: 28px auto;
+      padding: 0 16px 40px;
+    }
+
+    .section {
+      background: var(--card);
+      border-radius: 18px;
+      padding: 22px;
+      margin-bottom: 22px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(229,231,235,0.7);
+    }
+
+    .section h2 {
+      margin: 0 0 10px;
+      font-size: 24px;
+      color: #111827;
+    }
+
+    .section p {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .learning-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .learn-card {
+      background: #ffffff;
+      border: 2px solid var(--border);
+      border-radius: 18px;
+      padding: 18px 14px;
+      transition: transform 0.15s, border-color 0.15s, background 0.15s;
+    }
+
+    .learn-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--primary);
+      background: var(--soft-blue);
+    }
+
+    .arabic-letter {
+      display: block;
+      font-size: 66px;
+      font-weight: bold;
+      line-height: 1;
+      margin-bottom: 10px;
+      color: #111827;
+    }
+
+    .name {
+      display: block;
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .sound-note {
+      display: block;
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 14px;
+      min-height: 20px;
+    }
+
+    button {
+      font-family: Arial, sans-serif;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 12px;
+      background: var(--primary);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      padding: 11px 18px;
+      font-size: 16px;
+      transition: background 0.15s, transform 0.08s;
+    }
+
+    .btn:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn.secondary {
+      background: #374151;
+    }
+
+    .btn.secondary:hover {
+      background: #111827;
+    }
+
+    .quiz-box {
+      max-width: 760px;
+      margin: 0 auto;
+      background: #f9fafb;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+    }
+
+    .question {
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 18px;
+      color: #111827;
+      min-height: 32px;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .option-btn {
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 15px 8px;
+      cursor: pointer;
+      transition: transform 0.12s, border-color 0.12s, background 0.12s;
+      min-height: 92px;
+    }
+
+    .option-btn:hover {
+      transform: translateY(-2px);
+      border-color: var(--primary);
+      background: var(--soft-blue);
+    }
+
+    .option-btn .arabic-letter {
+      font-size: 46px;
+      margin-bottom: 6px;
+    }
+
+    .option-btn .name {
+      font-size: 15px;
+      margin-bottom: 0;
+      color: var(--muted);
+    }
+
+    .option-btn.correct {
+      background: var(--soft-green);
+      border-color: var(--success);
+    }
+
+    .option-btn.wrong {
+      background: var(--soft-red);
+      border-color: var(--error);
+    }
+
+    .feedback {
+      margin-top: 16px;
+      min-height: 28px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .feedback.good {
+      color: var(--success);
+    }
+
+    .feedback.bad {
+      color: var(--error);
+    }
+
+    .controls {
+      margin-top: 18px;
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .progress {
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 12px;
+    }
+
+    .footer-note {
+      color: #9ca3af;
+      font-size: 13px;
+      direction: ltr;
+      margin-top: 26px;
+    }
+
+    @media (max-width: 640px) {
+      header h1 {
+        font-size: 24px;
+      }
+
+      .section {
+        padding: 18px 14px;
+      }
+
+      .options-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .arabic-letter {
+        font-size: 58px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>יחידת לימוד 1: ا ب ت ث</h1>
+    <p>לומדים לאט: היכרות, תרגול ראייה, ואז תרגול שמיעה</p>
+  </header>
+
+  <main class="container">
+    <section class="section" id="learnSection">
+      <h2>א. היכרות עם האותיות</h2>
+      <p>לחץ על כפתור השמע בכל כרטיסייה. קרא את שם האות ונסה לשים לב להבדל בין האותיות.</p>
+      <div class="learning-grid" id="learningGrid"></div>
+    </section>
+
+    <section class="section" id="visualQuizSection">
+      <h2>ב. תרגול ראייה</h2>
+      <p>המערכת תבקש ממך לבחור אות לפי השם שלה בעברית.</p>
+      <div class="quiz-box">
+        <div class="question" id="visualQuestion"></div>
+        <div class="options-grid" id="visualOptions"></div>
+        <div class="feedback" id="visualFeedback"></div>
+        <div class="controls">
+          <button class="btn secondary" onclick="newVisualQuestion()">שאלה חדשה</button>
+        </div>
+        <div class="progress" id="visualProgress"></div>
+      </div>
+    </section>
+
+    <section class="section" id="audioQuizSection">
+      <h2>ג. תרגול שמיעה</h2>
+      <p>לחץ על “השמע אות”, הקשב, ואז בחר איזו אות שמעת.</p>
+      <div class="quiz-box">
+        <div class="question">איזו אות שמעת?</div>
+        <div class="controls" style="margin-top: 0; margin-bottom: 16px;">
+          <button class="btn" onclick="playAudioQuestion()">השמע אות 🔊</button>
+          <button class="btn secondary" onclick="newAudioQuestion()">שאלה חדשה</button>
+        </div>
+        <div class="options-grid" id="audioOptions"></div>
+        <div class="feedback" id="audioFeedback"></div>
+        <div class="progress" id="audioProgress"></div>
+      </div>
+    </section>
+
+    <div class="footer-note">letters-unit1-local-audio-v1</div>
+  </main>
+
+  <script>
+    const LETTERS = [
+      {
+        letter: "ا",
+        name: "אליף",
+        sound: "צליל בסיסי: א / ā",
+        audio: "audio/letters/001-alif.wav"
+      },
+      {
+        letter: "ب",
+        name: "בא",
+        sound: "כמו ב בעברית",
+        audio: "audio/letters/002-baa.wav"
+      },
+      {
+        letter: "ت",
+        name: "תא",
+        sound: "כמו ת בעברית",
+        audio: "audio/letters/003-taa.wav"
+      },
+      {
+        letter: "ث",
+        name: "ת׳א",
+        sound: "th כמו think באנגלית",
+        audio: "audio/letters/004-thaa.wav"
+      }
+    ];
+
+    let currentAudio = null;
+    let visualAnswer = null;
+    let audioAnswer = null;
+    let visualCorrect = 0;
+    let visualTotal = 0;
+    let audioCorrect = 0;
+    let audioTotal = 0;
+
+    function playSound(src) {
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+      }
+
+      currentAudio = new Audio(src);
+      currentAudio.play().catch(function(error) {
+        alert("לא הצלחתי לנגן את קובץ השמע. בדוק שהקובץ קיים בתיקייה audio/letters.");
+        console.error(error);
+      });
+    }
+
+    function shuffleArray(array) {
+      const copy = array.slice();
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const temp = copy[i];
+        copy[i] = copy[j];
+        copy[j] = temp;
+      }
+      return copy;
+    }
+
+    function randomLetter() {
+      return LETTERS[Math.floor(Math.random() * LETTERS.length)];
+    }
+
+    function buildLearningCards() {
+      const grid = document.getElementById("learningGrid");
+      grid.innerHTML = "";
+
+      LETTERS.forEach(function(item) {
+        const card = document.createElement("div");
+        card.className = "learn-card";
+        card.innerHTML = `
+          <span class="arabic-letter">${item.letter}</span>
+          <span class="name">${item.name}</span>
+          <span class="sound-note">${item.sound}</span>
+          <button class="btn" type="button">שמע ${item.name} 🔊</button>
+        `;
+
+        card.querySelector("button").addEventListener("click", function() {
+          playSound(item.audio);
+        });
+
+        grid.appendChild(card);
+      });
+    }
+
+    function renderOptions(containerId, onClick) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = "";
+
+      shuffleArray(LETTERS).forEach(function(item) {
+        const button = document.createElement("button");
+        button.className = "option-btn";
+        button.type = "button";
+        button.innerHTML = `
+          <span class="arabic-letter">${item.letter}</span>
+          <span class="name">${item.name}</span>
+        `;
+        button.addEventListener("click", function() {
+          onClick(item, button, container);
+        });
+        container.appendChild(button);
+      });
+    }
+
+    function clearOptionMarks(container) {
+      container.querySelectorAll(".option-btn").forEach(function(button) {
+        button.classList.remove("correct", "wrong");
+      });
+    }
+
+    function updateProgress() {
+      document.getElementById("visualProgress").textContent = "תרגול ראייה: " + visualCorrect + " נכונות מתוך " + visualTotal;
+      document.getElementById("audioProgress").textContent = "תרגול שמיעה: " + audioCorrect + " נכונות מתוך " + audioTotal;
+    }
+
+    function newVisualQuestion() {
+      visualAnswer = randomLetter();
+      document.getElementById("visualQuestion").textContent = "בחר את האות: " + visualAnswer.name;
+      const feedback = document.getElementById("visualFeedback");
+      feedback.textContent = "";
+      feedback.className = "feedback";
+
+      renderOptions("visualOptions", function(selected, button, container) {
+        clearOptionMarks(container);
+        visualTotal++;
+
+        if (selected.letter === visualAnswer.letter) {
+          visualCorrect++;
+          button.classList.add("correct");
+          feedback.textContent = "נכון! זו האות " + visualAnswer.name;
+          feedback.className = "feedback good";
+          playSound(selected.audio);
+        } else {
+          button.classList.add("wrong");
+          feedback.textContent = "לא מדויק. נסה שוב: צריך לבחור " + visualAnswer.name;
+          feedback.className = "feedback bad";
+        }
+
+        updateProgress();
+      });
+
+      updateProgress();
+    }
+
+    function newAudioQuestion() {
+      audioAnswer = randomLetter();
+      const feedback = document.getElementById("audioFeedback");
+      feedback.textContent = "";
+      feedback.className = "feedback";
+
+      renderOptions("audioOptions", function(selected, button, container) {
+        clearOptionMarks(container);
+        audioTotal++;
+
+        if (selected.letter === audioAnswer.letter) {
+          audioCorrect++;
+          button.classList.add("correct");
+          feedback.textContent = "נכון! שמעת את האות " + audioAnswer.name;
+          feedback.className = "feedback good";
+        } else {
+          button.classList.add("wrong");
+          feedback.textContent = "לא מדויק. אפשר ללחוץ שוב על השמע ולנסות לזהות.";
+          feedback.className = "feedback bad";
+        }
+
+        updateProgress();
+      });
+
+      updateProgress();
+    }
+
+    function playAudioQuestion() {
+      if (!audioAnswer) {
+        newAudioQuestion();
+      }
+      playSound(audioAnswer.audio);
+    }
+
+    buildLearningCards();
+    newVisualQuestion();
+    newAudioQuestion();
+    updateProgress();
+  </script>
+</body>
+</html>
