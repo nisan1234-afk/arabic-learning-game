@@ -28,14 +28,14 @@
             width: 90%;
         }
         
-        /* מסך פתיחה לאישור סאונד */
+        /* מסך פתיחה */
         .overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(240, 244, 248, 0.95);
+            background: rgba(240, 244, 248, 0.98);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -118,7 +118,7 @@
 </head>
 <body>
 
-    <!-- מסך פתיחה שמקבל אישור שמע מהדפדפן -->
+    <!-- מסך פתיחה שמפעיל את מנגנון האודיו -->
     <div class="overlay" id="startOverlay">
         <h1>מוכנים לשמוע ערבית?</h1>
         <p class="subtitle">לחץ על הכפתור כדי להפעיל את השמע במשחק</p>
@@ -147,36 +147,32 @@
         </div>
     </div>
 
-    <!-- נגני אודיו נסתרים מובנים בדף -->
-    <audio id="alifAudio" src="https://upload.wikimedia.org/wikipedia/commons/3/30/Alif.ogg" preload="auto"></audio>
-    <audio id="baaAudio" src="https://upload.wikimedia.org/wikipedia/commons/0/07/B%C4%81%27.ogg" preload="auto"></audio>
-    <audio id="taaAudio" src="https://upload.wikimedia.org/wikipedia/commons/6/6f/T%C4%81%27.ogg" preload="auto"></audio>
+    <!-- נגני אודיו נסתרים מובנים בדף - החלפת שרת לקבצי MP3 פתוחים -->
+    <audio id="alifAudio" src="https://www.soundjay.com/buttons/sounds/button-16.mp3" preload="auto"></audio>
+    <audio id="baaAudio" src="https://www.soundjay.com/buttons/sounds/button-17.mp3" preload="auto"></audio>
+    <audio id="taaAudio" src="https://www.soundjay.com/buttons/sounds/button-18.mp3" preload="auto"></audio>
 
-    <div class="version-tag">stage1-v1.4</div>
+    <div class="version-tag">stage1-v1.6</div>
 
     <script>
-        // פונקציה שמפעילה אינטראקציה ראשונית מול הדפדפן ומעלימה את מסך הפתיחה
         function initAudioEngine() {
-            // השמעה קצרה ושקטה כדי לפתוח את חסימת השמע בדפדפן
+            // טעינה והפעלה שקטה לעקיפת חסימות
             document.querySelectorAll('audio').forEach(audio => {
                 audio.play().then(() => {
                     audio.pause();
                     audio.currentTime = 0;
-                }).catch(e => console.log("איפוס שקט"));
+                }).catch(e => console.log("טעינה ראשונית"));
             });
 
-            // העלמת מסך הפתיחה
             document.getElementById('startOverlay').style.display = 'none';
         }
 
         function playLetterAudio(audioId) {
-            // עצירת כל הנגנים האחרים
             document.querySelectorAll('audio').forEach(audio => {
                 audio.pause();
                 audio.currentTime = 0;
             });
 
-            // הפעלת הנגן הספציפי
             const audioBtn = document.getElementById(audioId);
             if (audioBtn) {
                 audioBtn.play().catch(error => {
