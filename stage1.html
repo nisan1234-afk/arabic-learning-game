@@ -96,53 +96,32 @@
         <p class="instruction">לחץ על האותיות כדי לשמוע איך הוגים אותן בערבית:</p>
         
         <div class="letters-container">
-            <div class="letter-card" onclick="playAudio('ا')">
+            <div class="letter-card" onclick="playMp3('https://upload.wikimedia.org/wikipedia/commons/3/30/Alif.ogg')">
                 <span class="arabic-char">ا</span>
                 <span class="letter-name">אליף (א)</span>
             </div>
-            <div class="letter-card" onclick="playAudio('ب')">
+            <div class="letter-card" onclick="playMp3('https://upload.wikimedia.org/wikipedia/commons/0/07/B%C4%81%27.ogg')">
                 <span class="arabic-char">ب</span>
                 <span class="letter-name">בא (ב)</span>
             </div>
-            <div class="letter-card" onclick="playAudio('ت')">
+            <div class="letter-card" onclick="playMp3('https://upload.wikimedia.org/wikipedia/commons/6/6f/T%C4%81%27.ogg')">
                 <span class="arabic-char">ت</span>
                 <span class="letter-name">תא (ת)</span>
             </div>
         </div>
     </div>
 
-    <div class="version-tag">stage1-v1.1</div>
+    <div class="version-tag">stage1-v1.2</div>
 
     <script>
-        // פונקציית השמעת צליל משופרת לעקיפת חסימות דפדפן
-        function playAudio(text) {
-            if ('speechSynthesis' in window) {
-                // ביטול הקראות קודמות אם תקועות
-                window.speechSynthesis.cancel();
-                
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'ar-SA';
-                utterance.rate = 0.7; // מעט איטי יותר וברור
-                utterance.volume = 1.0; // ווליום מקסימלי
-                
-                // בדיקת שגיאות בזמן אמת בקונסול
-                utterance.onerror = function(event) {
-                    console.error("שגיאת הקראה:", event.error);
-                };
-
-                window.speechSynthesis.speak(utterance);
-            } else {
-                alert("הדפדפן שלך לא תומך בהקראת קול. מומלץ להשתמש בכרום.");
-            }
+        // פונקציה שמנגנת קובץ שמע אמיתי מהאינטרנט
+        function playMp3(url) {
+            const audio = new Audio(url);
+            audio.play().catch(error => {
+                console.error("שגיאה בניגון קובץ השמע:", error);
+                alert("הדפדפן חסם את השמע. נסה ללחוץ שוב או לרענן.");
+            });
         }
-        
-        // הפעלה ראשונית שקטה כדי "להעיר" את מנגנון הסאונד של הדפדפן מיד בכניסה
-        window.addEventListener('click', function() {
-            if ('speechSynthesis' in window) {
-                const initUtterance = new SpeechSynthesisUtterance('');
-                window.speechSynthesis.speak(initUtterance);
-            }
-        }, { once: true });
     </script>
 </body>
 </html>
