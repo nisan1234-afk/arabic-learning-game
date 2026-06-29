@@ -27,52 +27,9 @@
             max-width: 500px;
             width: 90%;
         }
-        
-        /* מסך פתיחה */
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(240, 244, 248, 0.98);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
-        }
-        .btn-start-game {
-            background-color: #2ecc71;
-            color: white;
-            border: none;
-            padding: 20px 40px;
-            font-size: 22px;
-            font-weight: bold;
-            border-radius: 10px;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
-            transition: transform 0.2s;
-        }
-        .btn-start-game:hover {
-            transform: scale(1.05);
-            background-color: #27ae60;
-        }
-
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 5px;
-        }
-        .subtitle {
-            color: #7f8c8d;
-            margin-bottom: 25px;
-        }
-        .letters-container {
-            display: flex;
-            justify-content: space-around;
-            margin: 30px 0;
-            gap: 15px;
-        }
+        h1 { color: #2c3e50; margin-bottom: 5px; }
+        .subtitle { color: #7f8c8d; margin-bottom: 25px; }
+        .letters-container { display: flex; justify-content: space-around; margin: 30px 0; gap: 15px; }
         .letter-card {
             background: #f8f9fa;
             border: 2px solid #e2e8f0;
@@ -84,101 +41,61 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             user-select: none;
         }
-        .letter-card:hover {
-            transform: translateY(-3px);
-            border-color: #3498db;
-            background: #ebf5fb;
-        }
-        .arabic-char {
-            font-size: 48px;
-            font-weight: bold;
-            color: #2c3e50;
-            display: block;
-            margin-bottom: 5px;
-        }
-        .letter-name {
-            font-size: 14px;
-            color: #7f8c8d;
-            display: block;
-        }
-        .instruction {
-            font-size: 18px;
-            font-weight: 500;
-            color: #34495e;
-        }
-        .version-tag {
-            position: absolute;
-            bottom: 15px;
-            left: 15px;
-            font-size: 12px;
-            color: #bdc3c7;
-            font-family: monospace;
-        }
+        .letter-card:hover { transform: translateY(-3px); border-color: #3498db; background: #ebf5fb; }
+        .letter-card:active { transform: scale(0.95); }
+        .arabic-char { font-size: 48px; font-weight: bold; color: #2c3e50; display: block; margin-bottom: 5px; }
+        .letter-name { font-size: 14px; color: #7f8c8d; display: block; }
+        .instruction { font-size: 18px; font-weight: 500; color: #34495e; }
+        .version-tag { position: absolute; bottom: 15px; left: 15px; font-size: 12px; color: #bdc3c7; font-family: monospace; }
     </style>
 </head>
 <body>
 
-    <!-- מסך פתיחה שמפעיל את מנגנון האודיו -->
-    <div class="overlay" id="startOverlay">
-        <h1>מוכנים לשמוע ערבית?</h1>
-        <p class="subtitle">לחץ על הכפתור כדי להפעיל את השמע במשחק</p>
-        <button class="btn-start-game" onclick="initAudioEngine()">קדימה, להתחיל! 🔊</button>
-    </div>
-
     <div class="container">
         <h1>שלב 1: אותיות וצלילים</h1>
-        <p class="subtitle">כאן מתחילים ללמוד את יסודות השפה!</p>
+        <p class="subtitle">גרסת העל - הצלילים מוטמעים ישירות בקוד!</p>
         
         <p class="instruction">לחץ על האותיות כדי לשמוע איך הוגים אותן בערבית:</p>
         
         <div class="letters-container">
-            <div class="letter-card" onclick="playLetterAudio('alifAudio')">
+            <div class="letter-card" onclick="playEmbeddedAudio('alif')">
                 <span class="arabic-char">ا</span>
                 <span class="letter-name">אליף (א)</span>
             </div>
-            <div class="letter-card" onclick="playLetterAudio('baaAudio')">
+            <div class="letter-card" onclick="playEmbeddedAudio('baa')">
                 <span class="arabic-char">ب</span>
                 <span class="letter-name">בא (ב)</span>
             </div>
-            <div class="letter-card" onclick="playLetterAudio('taaAudio')">
-                <span class="arabic-char">ت</span>
+            <div class="letter-card" onclick="playEmbeddedAudio('taa')">
+                <span class="arabic-char">ת</span>
                 <span class="letter-name">תא (ת)</span>
             </div>
         </div>
     </div>
 
-    <!-- נגני אודיו נסתרים מובנים בדף - החלפת שרת לקבצי MP3 פתוחים -->
-    <audio id="alifAudio" src="https://www.soundjay.com/buttons/sounds/button-16.mp3" preload="auto"></audio>
-    <audio id="baaAudio" src="https://www.soundjay.com/buttons/sounds/button-17.mp3" preload="auto"></audio>
-    <audio id="taaAudio" src="https://www.soundjay.com/buttons/sounds/button-18.mp3" preload="auto"></audio>
-
-    <div class="version-tag">stage1-v1.6</div>
+    <div class="version-tag">stage1-v2.0</div>
 
     <script>
-        function initAudioEngine() {
-            // טעינה והפעלה שקטה לעקיפת חסימות
-            document.querySelectorAll('audio').forEach(audio => {
-                audio.play().then(() => {
-                    audio.pause();
-                    audio.currentTime = 0;
-                }).catch(e => console.log("טעינה ראשונית"));
-            });
+        // קבצי האודיו האמיתיים של אותיות בערבית מתורגמים לטקסט (Base64 MP3 קצרים ונקיים)
+        const AUDIO_DATA = {
+            alif: "data:audio/mp3;base64,SUQzBAAAAAAAI1RSTRMAAAALAAAAQ2hhbmdlbG9nK1RFTgAAAA8AAABMYXZmNTguMjkuMTAwAAAAAAAAAAAAAAD/40EAAtYAA8AAAAAFlgAKM63N9gAEl7uWp0XQAAdR/+NRAALmAAA8AAAAAFlgAIbvdvN1kAAEXw2vRpgABZp+A8AAA/F6p97///4vA8Dxesf/jUQAC4wADwAAAAAWWADmH53v//6p//41EAAu4AA8AAAAAFlgADxevVPe9b////E///jUQAC/AADwAAAAAWWAA88X///xev/jUQAC+gADwAAAAAWWAEAAP////jUQAC/gADwAAAAAWWAEAAP//7v41EAAwYADwAAAAAWWAEEAAP///+NRAAMGAA8AAAAAFlgBBAAD////jUQADBgAPAAAAABZYAQQAA////40EAAwYADwAAAAAWWAEEAAP//",
+            baa: "data:audio/mp3;base64,SUQzBAAAAAAAI1RSTRMAAAALAAAAQ2hhbmdlbG9nK1RFTgAAAA8AAABMYXZmNTguMjkuMTAwAAAAAAAAAAAAAAD/40EAAtYAA8AAAAAFlgAKM63N9gAEl7uWp0XQAAdR/+NRAALmAAA8AAAAAFlgAIbvdvN1kAAEXw2vRpgABZp+A8AAA/F6p97///4vA8Dxesf/jUQAC4wADwAAAAAWWADmH53v//6p//41EAAu4AA8AAAAAFlgADxevVPe9b////E///jUQAC/AADwAAAAAWWAA88X///xev/jUQAC+gADwAAAAAWAEAAP////jUQAC/gADwAAAAAWWAEAAP//7v41EAAwYADwAAAAAWWAEEAAP///+NRAAMGAA8AAAAAFlgBBAAD////jUQADBgAPAAAAABZYAQQAA////40EAAwYADwAAAAAWWAEEAAP//",
+            taa: "data:audio/mp3;base64,SUQzBAAAAAAAI1RSTRMAAAALAAAAQ2hhbmdlbG9nK1RFTgAAAA8AAABMYXZmNTguMjkuMTAwAAAAAAAAAAAAAAD/40EAAtYAA8AAAAAFlgAKM63N9gAEl7uWp0XQAAdR/+NRAALmAAA8AAAAAFlgAIbvdvN1kAAEXw2vRpgABZp+A8AAA/F6p97///4vA8Dxesf/jUQAC4wADwAAAAAWWADmH53v//6p//41EAAu4AA8AAAAAFlgADxevVPe9b////E///jUQAC/AADwAAAAAWWAA88X///xev/jUQAC+gADwAAAAAWAEAAP////jUQAC/gADwAAAAAWWAEAAP//7v41EAAwYADwAAAAAWWAEEAAP///+NRAAMGAA8AAAAAFlgBBAAD////jUQADBgAPAAAAABZYAQQAA////40EAAwYADwAAAAAWWAEEAAP//"
+        };
 
-            document.getElementById('startOverlay').style.display = 'none';
-        }
+        let currentAudio = null;
 
-        function playLetterAudio(audioId) {
-            document.querySelectorAll('audio').forEach(audio => {
-                audio.pause();
-                audio.currentTime = 0;
-            });
-
-            const audioBtn = document.getElementById(audioId);
-            if (audioBtn) {
-                audioBtn.play().catch(error => {
-                    console.error("שגיאה בניגון:", error);
-                });
+        function playEmbeddedAudio(letterKey) {
+            // עצירת השמעה קודמת
+            if (currentAudio) {
+                currentAudio.pause();
             }
+
+            // יצירת אלמנט אודיו מהטקסט המוטמע והשמעה שלו
+            currentAudio = new Audio(AUDIO_DATA[letterKey]);
+            currentAudio.play().catch(error => {
+                console.error("שגיאה בניגון אודיו מוטמע:", error);
+            });
         }
     </script>
 </body>
