@@ -16,6 +16,7 @@
     <div class="top-actions">
       <a class="nav-link" href="index.html">← חזרה ליחידות האותיות</a>
       <a class="nav-link" href="../learn.html">מרחב הלמידה</a>
+      <span class="auth-status" id="authStatus">בודק חיבור...</span>
     </div>
 
     <section class="unit-nav panel compact-panel">
@@ -75,11 +76,40 @@
       <div class="feedback" id="finishFeedback"></div>
     </section>
 
-    <div class="version">letters-unit-engine-v2</div>
+    <div class="version">letters-unit-engine-v3-progress</div>
   </main>
 
   <script src="letters-data.js"></script>
-  <script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDQMRU4HWpFlHc-EJmurZDhdiZywZWdCz4",
+      authDomain: "arabic-learning-game.firebaseapp.com",
+      projectId: "arabic-learning-game",
+      storageBucket: "arabic-learning-game.firebasestorage.app",
+      messagingSenderId: "246704525050",
+      appId: "1:246704525050:web:b6f6aee90c6ec93a5cc343",
+      measurementId: "G-T79GZD76HD"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    let currentUser = null;
+
+    onAuthStateChanged(auth, function(user) {
+      currentUser = user;
+      const authStatus = document.getElementById('authStatus');
+      if (user) {
+        authStatus.textContent = 'מחובר: ' + (user.displayName || user.email || 'משתמש');
+      } else {
+        authStatus.textContent = 'לא מחובר - השמירה תעבוד אחרי כניסה מגוגל';
+      }
+    });
+
     const params = new URLSearchParams(window.location.search);
     const unitId = Number(params.get('unit') || '1');
     const unit = window.LETTER_UNITS.find(u => u.id === unitId) || window.LETTER_UNITS[0];
@@ -258,17 +288,53 @@
       newListeningQuestion(false);
     }
 
-    function finishUnit() {
+    async function finishUnit() {
       const feedback = document.getElementById('finishFeedback');
       const enoughPractice = visualCorrect >= 3 && listeningCorrect >= 3;
-      if (enoughPractice) {
-        feedback.textContent = 'מצוין. היחידה מוכנה לשמירת התקדמות בשלב הבא.';
-        feedback.className = 'feedback good';
-      } else {
+
+      if (!enoughPractice) {
         feedback.textContent = 'כדאי לתרגל עוד קצת: לפחות 3 הצלחות בראייה ו-3 הצלחות בשמיעה.';
+        feedback.className = 'feedback bad';
+        return;
+      }
+
+      if (!currentUser) {
+        feedback.textContent = 'היחידה מוכנה, אבל לא זוהה חיבור Google. חזור לדף הכניסה והתחבר כדי לשמור התקדמות.';
+        feedback.className = 'feedback bad';
+        return;
+      }
+
+      try {
+        feedback.textContent = 'שומר התקדמות...';
+        feedback.className = 'feedback';
+
+        await setDoc(
+          doc(db, 'users', currentUser.uid, 'lettersProgress', 'unit' + unit.id),
+          {
+            unitId: unit.id,
+            title: unit.title,
+            completed: true,
+            completedAt: serverTimestamp(),
+            visualCorrect: visualCorrect,
+            visualAttempts: visualAttempts,
+            listeningCorrect: listeningCorrect,
+            listeningAttempts: listeningAttempts,
+            updatedAt: serverTimestamp()
+          },
+          { merge: true }
+        );
+
+        feedback.textContent = 'נשמר! היחידה סומנה כהושלמה ✓';
+        feedback.className = 'feedback good';
+      } catch (error) {
+        console.error(error);
+        feedback.textContent = 'לא הצלחתי לשמור ב-Firebase. ייתכן שצריך להפעיל Firestore או לעדכן הרשאות.';
         feedback.className = 'feedback bad';
       }
     }
+
+    window.resetPractice = resetPractice;
+    window.finishUnit = finishUnit;
 
     setNavigation();
     buildStudy();

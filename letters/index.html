@@ -23,26 +23,86 @@
     </section>
 
     <section class="units-grid" id="unitsGrid"></section>
+    <div class="feedback" id="progressStatus">בודק התקדמות...</div>
 
-    <div class="version">letters-index-v2-modular</div>
+    <div class="version">letters-index-v3-progress</div>
   </main>
 
   <script src="letters-data.js"></script>
-  <script>
-    const grid = document.getElementById('unitsGrid');
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    window.LETTER_UNITS.forEach(function(unit) {
-      const letters = unit.letters.map(item => item.arabic).join(' ');
-      const card = document.createElement('a');
-      card.className = 'unit-card';
-      card.href = 'unit.html?unit=' + unit.id;
-      card.innerHTML = `
-        <h2>${unit.title}</h2>
-        <div class="letters-row">${letters}</div>
-        <p>${unit.subtitle}</p>
-        <span class="tag">פתוח</span>
-      `;
-      grid.appendChild(card);
+    const firebaseConfig = {
+      apiKey: "AIzaSyDQMRU4HWpFlHc-EJmurZDhdiZywZWdCz4",
+      authDomain: "arabic-learning-game.firebaseapp.com",
+      projectId: "arabic-learning-game",
+      storageBucket: "arabic-learning-game.firebasestorage.app",
+      messagingSenderId: "246704525050",
+      appId: "1:246704525050:web:b6f6aee90c6ec93a5cc343",
+      measurementId: "G-T79GZD76HD"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const grid = document.getElementById('unitsGrid');
+    const progressStatus = document.getElementById('progressStatus');
+
+    function renderUnits(completedUnits) {
+      grid.innerHTML = '';
+      window.LETTER_UNITS.forEach(function(unit) {
+        const isDone = completedUnits.has(unit.id);
+        const letters = unit.letters.map(item => item.arabic).join(' ');
+        const card = document.createElement('a');
+        card.className = 'unit-card' + (isDone ? ' completed-card' : '');
+        card.href = 'unit.html?unit=' + unit.id;
+        card.innerHTML = `
+          <h2>${unit.title}</h2>
+          <div class="letters-row">${letters}</div>
+          <p>${unit.subtitle}</p>
+          <span class="tag ${isDone ? 'completed-tag' : ''}">${isDone ? 'הושלם ✓' : 'פתוח'}</span>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    async function loadProgress(user) {
+      const completedUnits = new Set();
+
+      if (!user) {
+        progressStatus.textContent = 'לא מחובר - היחידות פתוחות, אבל התקדמות לא תוצג.';
+        progressStatus.className = 'feedback bad';
+        renderUnits(completedUnits);
+        return;
+      }
+
+      try {
+        const snapshot = await getDocs(collection(db, 'users', user.uid, 'lettersProgress'));
+        snapshot.forEach(function(docSnap) {
+          const data = docSnap.data();
+          if (data.completed && data.unitId) {
+            completedUnits.add(Number(data.unitId));
+          }
+        });
+
+        progressStatus.textContent = completedUnits.size > 0
+          ? 'נטענה התקדמות: ' + completedUnits.size + ' יחידות הושלמו.'
+          : 'עדיין לא סומנה יחידת אותיות כהושלמה.';
+        progressStatus.className = 'feedback good';
+        renderUnits(completedUnits);
+      } catch (error) {
+        console.error(error);
+        progressStatus.textContent = 'לא הצלחתי לקרוא התקדמות מ-Firebase. היחידות עדיין פתוחות ללמידה.';
+        progressStatus.className = 'feedback bad';
+        renderUnits(completedUnits);
+      }
+    }
+
+    onAuthStateChanged(auth, function(user) {
+      loadProgress(user);
     });
   </script>
 </body>

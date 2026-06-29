@@ -92,8 +92,11 @@ header p { margin: 0; color: #dbeafe; font-size: 16px; }
   transition: transform .16s, border-color .16s;
 }
 .unit-card:hover { transform: translateY(-3px); border-color: var(--accent); }
+.unit-card.completed-card { border-color: #10b981; background: #f0fdf4; }
 .unit-card .letters-row { font-size: 38px; direction: rtl; margin: 12px 0; }
 .unit-card .tag { display: inline-block; padding: 5px 12px; border-radius: 999px; background: #d1fae5; color: var(--success); font-weight: 700; font-size: 13px; }
+.unit-card .tag.completed-tag { background: #10b981; color: white; }
+.auth-status { color: #6b7280; font-weight: 700; font-size: 14px; }
 
 .arabic-big {
   display: block;
